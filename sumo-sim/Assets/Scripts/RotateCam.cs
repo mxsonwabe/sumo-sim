@@ -8,16 +8,17 @@ public class RotateCam : MonoBehaviour
   // Start is called once before the first execution of Update after the MonoBehaviour is created
   void Start()
   {
-    rotSpeed = 5f;
-    rotAction = InputSystem.actions.FindAction("Camera/Move", true);
+    rotSpeed = 200f;
+    rotAction = InputSystem.actions.FindAction("Camera/AnotherMove", true);
   }
 
   // Update is called once per frame
   void Update()
   {
-    Vector2 move = rotAction.ReadValue<Vector2>();
+    //Vector2 move = rotAction.ReadValue<Vector2>();
+    float move = rotAction.ReadValue<float>();
     Debug.Log("move: " + move.ToString());
-    transform.Rotate(Vector3.up, rotSpeed * move.x * Time.deltaTime);
+    transform.Rotate(Vector3.up, rotSpeed * move * Time.deltaTime);
   }
 
   //void OnMove(InputValue inputMove)
