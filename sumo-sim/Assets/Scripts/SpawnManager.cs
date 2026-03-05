@@ -3,22 +3,24 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
   float _spawnRange;
-  int _enemyCount, _currEnemyCount;
+  int _enemyCountWave, _currEnemyCount;
   [SerializeField] GameObject emenyPrefab;
+  [SerializeField] GameObject powerUpPrefab;
   // Start is called once before the first execution of Update after the MonoBehaviour is created
   void Start()
   {
-    _enemyCount = 3;
+    _enemyCountWave = 1;
     _spawnRange = 9.0f;
-    SpawnEnemyWave(_enemyCount);
+    SpawnEnemyWave(_enemyCountWave);
   }
   
   // Update is called once per frame
   void Update()
   {
-    _currEnemyCount = GameObject.FindObjectsByType<EnemyController>(FindObjectsSortMode.None).Length;
-    if (_currEnemyCount <= 0) { 
-      SpawnEnemyWave(_enemyCount);
+    _currEnemyCount = EnemyController.activeEnemyCount;
+    if (_currEnemyCount <= 0) {
+      _enemyCountWave += 1;
+      SpawnEnemyWave(_enemyCountWave);
     }
   }
   void SpawnEnemyWave(int wave_n)
@@ -27,6 +29,7 @@ public class SpawnManager : MonoBehaviour
     {
       Instantiate(emenyPrefab,RandomSpawnPos(), emenyPrefab.transform.rotation);
     }
+    Instantiate(powerUpPrefab,RandomSpawnPos(), powerUpPrefab.transform.rotation);
   }
   Vector3 RandomSpawnPos()
   {

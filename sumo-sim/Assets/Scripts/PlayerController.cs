@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
   bool _onPowerUp;
   InputAction moveAction;
   GameObject focalPointGameObj;
-  [SerializeField] float inputForce = 5f;
+  [SerializeField] float inputForce = 3.5f;
   [SerializeField] GameObject powerUpIndicator;
   private static WaitForSeconds _waitForSeconds5 = new WaitForSeconds(5);
   void Start()
@@ -25,6 +25,15 @@ public class PlayerController : MonoBehaviour
     Vector2 input = moveAction.ReadValue<Vector2>();
     rb.AddForce(input.y * inputForce * focalPointGameObj.transform.forward);
     powerUpIndicator.transform.position = transform.position;
+    //if (transform.position.y < -5)
+    //{
+    //  Instantiate(gameObject.transform, new Vector3(0f, 0.5f, 0f), transform.rotation);
+    //}
+
+    if (transform.position.y < -5)
+    {
+      transform.position = new Vector3(0f, 0.5f, 0f);
+    }
   }
 
   private void OnTriggerEnter(Collider other)
@@ -52,11 +61,13 @@ public class PlayerController : MonoBehaviour
   {
     if (collision.gameObject.CompareTag("Enemy") && _onPowerUp)
     {
-      float powerUpForce = 5f * inputForce;
+      int currentEnemies = EnemyController.activeEnemyCount;
+      int powerUpOffset = currentEnemies / 5;
+      float baseForce = (5.5f * inputForce);
+      float powerUpForce = baseForce * (1 + powerUpOffset);
       Vector3 enemyDir = (collision.gameObject.transform.position - transform.position).normalized;
       Rigidbody enemyRb = collision.gameObject.GetComponent<Rigidbody>();
       enemyRb.AddForce(enemyDir * powerUpForce, ForceMode.Impulse);
     }
   }
-
-}
+ } 
