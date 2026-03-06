@@ -5,17 +5,20 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
   Rigidbody rb;
-  bool _onPowerUp;
   InputAction moveAction;
+  InputAction fireAction;
   GameObject focalPointGameObj;
   [SerializeField] float inputForce = 3.5f;
+  [SerializeField] GameObject rocketPrefab;
   [SerializeField] GameObject powerUpIndicator;
-  private static WaitForSeconds _waitForSeconds5 = new WaitForSeconds(5);
+  PowerUpType currentPowerType = PowerUpType.None;
+  private static WaitForSeconds _waitForSeconds7 = new WaitForSeconds(7);
   void Start()
   {
     rb = GetComponent<Rigidbody>();
     // "Player/Move" maps to the WS and arrow key bindings
     moveAction = InputSystem.actions.FindAction("Player/Move", true);
+    fireAction = InputSystem.actions.FindAction("Player/Attack", true);
     focalPointGameObj = GameObject.Find("FocalPoint");
     powerUpIndicator.SetActive(false);
   }
@@ -26,11 +29,18 @@ public class PlayerController : MonoBehaviour
     rb.AddForce(input.y * inputForce * focalPointGameObj.transform.forward);
     powerUpIndicator.transform.position = transform.position;
 
+    // displace the player once it falls into the 'void'
     if (transform.position.y < -5)
     {
       transform.position = new Vector3(0f, 0.5f, 0f);
       rb.linearVelocity = Vector3.zero;
       rb.angularVelocity = Vector3.zero;
+    }
+
+    // check if the player fire's missile while on 'power'
+    if (currentPowerType == PowerUpType.Rocket && fireAction.WasPressedThisFrame())
+    {
+      LaunchRocket();
     }
   }
 
@@ -39,25 +49,38 @@ public class PlayerController : MonoBehaviour
     Debug.Log("OnTriggerEnter");
     if (other.CompareTag("Powerup"))
     {
-      _onPowerUp = true;
+      currentPowerType = other.gameObject.GetComponent<PowerUp>().powerUpType;
       powerUpIndicator.SetActive(true);
       Destroy(other.gameObject);
-      Debug.Log($"({_onPowerUp}) Powerup: ON");
+      Debug.Log($"({currentPowerType}) Powerup: ON");
       StartCoroutine(nameof(EndPowerUp));
     }
   }
 
+  void LaunchRocket()
+  {
+    // instantiate a rocket to be fired at each enemy
+    foreach (var enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+    {
+      Vector3 spawnPos = transform.position;
+      spawnPos.y = rocketPrefab.transform.position.y;
+      GameObject tmpRocket = Instantiate(rocketPrefab, spawnPos, Quaternion.identity);
+      tmpRocket.GetComponent<RocketController>().Fire(enemy.transform);
+    }
+  }
   IEnumerator EndPowerUp()
   {
-    yield return _waitForSeconds5;
-    _onPowerUp = false;
-    Debug.Log($"({_onPowerUp}) Powerup: OFF");
+    //yield return _waitForSeconds7;
+    yield return new WaitForSeconds(100);
+    currentPowerType = PowerUpType.None;
+    Debug.Log($"({currentPowerType}) Powerup: OFF");
     powerUpIndicator.SetActive(false);
   }
 
   private void OnCollisionEnter(Collision collision)
   {
-    if (collision.gameObject.CompareTag("Enemy") && _onPowerUp)
+    Debug.Log("OnCollisionEnter");
+    if (collision.gameObject.CompareTag("Enemy") && currentPowerType == PowerUpType.PushBack)
     {
       int currentEnemies = EnemyController.activeEnemyCount;
       int powerUpOffset = currentEnemies / 5;
@@ -68,4 +91,4 @@ public class PlayerController : MonoBehaviour
       enemyRb.AddForce(enemyDir * powerUpForce, ForceMode.Impulse);
     }
   }
- } 
+}
