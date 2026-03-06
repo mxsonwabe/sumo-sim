@@ -25,14 +25,12 @@ public class PlayerController : MonoBehaviour
     Vector2 input = moveAction.ReadValue<Vector2>();
     rb.AddForce(input.y * inputForce * focalPointGameObj.transform.forward);
     powerUpIndicator.transform.position = transform.position;
-    //if (transform.position.y < -5)
-    //{
-    //  Instantiate(gameObject.transform, new Vector3(0f, 0.5f, 0f), transform.rotation);
-    //}
 
     if (transform.position.y < -5)
     {
       transform.position = new Vector3(0f, 0.5f, 0f);
+      rb.linearVelocity = Vector3.zero;
+      rb.angularVelocity = Vector3.zero;
     }
   }
 

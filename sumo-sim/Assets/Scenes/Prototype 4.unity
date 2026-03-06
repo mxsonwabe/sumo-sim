@@ -148,7 +148,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ae510592ee05eb4588df27feefb89ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  emenyPrefab: {fileID: 1666853428813817155, guid: e1b0d00041912294ebe62d606558871f, type: 3}
+  emenyPrefab:
+  - {fileID: 1666853428813817155, guid: e1b0d00041912294ebe62d606558871f, type: 3}
+  - {fileID: 1666853428813817155, guid: fff0a414119cd024086996e2f9778d4d, type: 3}
+  - {fileID: 7910910724068383886, guid: e0d4b30f5ea6d874187de1c14c7fa8f0, type: 3}
+  - {fileID: 1516892689157157088, guid: 5ac0a9d91788d1448806dcb81c54507c, type: 3}
   powerUpPrefab: {fileID: 7101460870803607952, guid: 4e4577cb59c46dc4cb90a3747ba6d4a9, type: 3}
 --- !u!4 &359701043
 Transform:

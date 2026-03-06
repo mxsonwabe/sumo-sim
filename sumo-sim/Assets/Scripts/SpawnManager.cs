@@ -4,7 +4,7 @@ public class SpawnManager : MonoBehaviour
 {
   float _spawnRange;
   int _enemyCountWave, _currEnemyCount;
-  [SerializeField] GameObject emenyPrefab;
+  [SerializeField] GameObject[] emenyPrefab;
   [SerializeField] GameObject powerUpPrefab;
   // Start is called once before the first execution of Update after the MonoBehaviour is created
   void Start()
@@ -27,7 +27,8 @@ public class SpawnManager : MonoBehaviour
   {
     for (int i = 0; i < wave_n; i++)
     {
-      Instantiate(emenyPrefab,RandomSpawnPos(), emenyPrefab.transform.rotation);
+      int idx = Random.Range(0, emenyPrefab.Length);
+      Instantiate(emenyPrefab[idx],RandomSpawnPos(), emenyPrefab[idx].transform.rotation);
     }
     Instantiate(powerUpPrefab,RandomSpawnPos(), powerUpPrefab.transform.rotation);
   }
