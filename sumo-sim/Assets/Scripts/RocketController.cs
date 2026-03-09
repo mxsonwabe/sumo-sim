@@ -3,9 +3,9 @@ using UnityEngine;
 public class RocketController : MonoBehaviour
 {
   bool homing = false;
-  float speed = 15.0f;
-  float rocketStrength = 15f;
-  float aliveTimer = 5f;
+  float speed = 25.0f;
+  float rocketStrength = 15.0f;
+  float aliveTimer = 3.5f;
 
   Transform target;
   // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -44,7 +44,9 @@ public class RocketController : MonoBehaviour
       // once you get the enemy's rigid body, apply a force to push it away
       Rigidbody enemyRb = collision.gameObject.GetComponent<Rigidbody>();
       Vector3 away = (collision.gameObject.transform.position - transform.position).normalized;
-      enemyRb.AddForce(away * rocketStrength, ForceMode.Impulse);
+      Vector3 force = away * rocketStrength;
+      Debug.Log($"force: ({force})");
+      enemyRb.AddForce(force, ForceMode.Impulse);
       // destroy bullet on impact
       Destroy(gameObject);
     }

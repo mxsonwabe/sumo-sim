@@ -12,13 +12,13 @@ public class PlayerController : MonoBehaviour
   [SerializeField] GameObject rocketPrefab;
   [SerializeField] GameObject powerUpIndicator;
   PowerUpType currentPowerType = PowerUpType.None;
-  private static WaitForSeconds _waitForSeconds7 = new WaitForSeconds(7);
+  private static WaitForSeconds _waitForSeconds5 = new WaitForSeconds(5);
   void Start()
   {
     rb = GetComponent<Rigidbody>();
     // "Player/Move" maps to the WS and arrow key bindings
     moveAction = InputSystem.actions.FindAction("Player/Move", true);
-    fireAction = InputSystem.actions.FindAction("Player/Attack", true);
+    fireAction = InputSystem.actions.FindAction("Player/Fire", true);
     focalPointGameObj = GameObject.Find("FocalPoint");
     powerUpIndicator.SetActive(false);
   }
@@ -64,14 +64,13 @@ public class PlayerController : MonoBehaviour
     {
       Vector3 spawnPos = transform.position;
       spawnPos.y = rocketPrefab.transform.position.y;
-      GameObject tmpRocket = Instantiate(rocketPrefab, spawnPos, Quaternion.identity);
+      GameObject tmpRocket = Instantiate(rocketPrefab, spawnPos, rocketPrefab.transform.rotation);
       tmpRocket.GetComponent<RocketController>().Fire(enemy.transform);
     }
   }
   IEnumerator EndPowerUp()
   {
-    //yield return _waitForSeconds7;
-    yield return new WaitForSeconds(100);
+    yield return _waitForSeconds5;
     currentPowerType = PowerUpType.None;
     Debug.Log($"({currentPowerType}) Powerup: OFF");
     powerUpIndicator.SetActive(false);
