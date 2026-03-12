@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
   Rigidbody rb;
+  bool isOnGround;
   InputAction moveAction;
   InputAction fireAction;
   GameObject focalPointGameObj;
@@ -41,6 +42,10 @@ public class PlayerController : MonoBehaviour
     if (currentPowerType == PowerUpType.Rocket && fireAction.WasPressedThisFrame())
     {
       LaunchRocket();
+    }
+    if (currentPowerType == PowerUpType.Smash && fireAction.WasPressedThisFrame())
+    {
+      SmashEnemies();
     }
   }
 
@@ -79,15 +84,43 @@ public class PlayerController : MonoBehaviour
   private void OnCollisionEnter(Collision collision)
   {
     Debug.Log("OnCollisionEnter");
-    if (collision.gameObject.CompareTag("Enemy") && currentPowerType == PowerUpType.PushBack)
+    GameObject gmObject = collision.gameObject;
+    if (gmObject.CompareTag("Enemy") && currentPowerType == PowerUpType.PushBack)
     {
-      int currentEnemies = EnemyController.activeEnemyCount;
-      int powerUpOffset = currentEnemies / 5;
-      float baseForce = (5.5f * inputForce);
-      float powerUpForce = baseForce * (1 + powerUpOffset);
-      Vector3 enemyDir = (collision.gameObject.transform.position - transform.position).normalized;
-      Rigidbody enemyRb = collision.gameObject.GetComponent<Rigidbody>();
-      enemyRb.AddForce(enemyDir * powerUpForce, ForceMode.Impulse);
+      PushEnemy(collision.gameObject);
     }
+    else if (gmObject.CompareTag("Ground"))
+    {
+      isOnGround = true;
+    }
+  }
+
+  void SmashEnemies()
+  {
+    int currentEnemies = EnemyController.activeEnemyCount;
+    rb.AddForce(Vector3.up * 20, ForceMode.Impulse);
+    rb.AddForce(Vector3.up * -10, ForceMode.Impulse);
+    isOnGround = false;
+    GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+    if (!isOnGround)
+    {
+      foreach (var enemy in enemies)
+      {
+        Rigidbody enemyRb = enemy.GetComponent<Rigidbody>();
+        Vector3 away = (enemy.transform.position - transform.position).normalized;
+        enemyRb.AddForce(away * 10, ForceMode.Impulse);
+      }
+    }
+  }
+  void PushEnemy(GameObject gmObj)
+  {
+
+    int currentEnemies = EnemyController.activeEnemyCount;
+    int powerUpOffset = currentEnemies / 5;
+    float baseForce = (5.5f * inputForce);
+    float powerUpForce = baseForce * (1 + powerUpOffset);
+    Vector3 enemyDir = (gmObj.transform.position - transform.position).normalized;
+    Rigidbody enemyRb = gmObj.GetComponent<Rigidbody>();
+    enemyRb.AddForce(enemyDir * powerUpForce, ForceMode.Impulse);
   }
 }
