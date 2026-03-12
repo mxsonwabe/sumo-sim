@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
   InputAction fireAction;
   GameObject focalPointGameObj;
   [SerializeField] float inputForce = 3.5f;
+  [SerializeField] float smashRadius = 10f;
+  [SerializeField] float smashForce= 50f;
   [SerializeField] GameObject rocketPrefab;
   [SerializeField] GameObject powerUpIndicator;
   PowerUpType currentPowerType = PowerUpType.None;
@@ -45,13 +47,13 @@ public class PlayerController : MonoBehaviour
     }
     if (currentPowerType == PowerUpType.Smash && fireAction.WasPressedThisFrame())
     {
-      SmashEnemies();
+      StartCoroutine(SmashEnemies());
     }
   }
 
   private void OnTriggerEnter(Collider other)
   {
-    Debug.Log("OnTriggerEnter");
+    //Debug.Log("OnTriggerEnter");
     if (other.CompareTag("Powerup"))
     {
       currentPowerType = other.gameObject.GetComponent<PowerUp>().powerUpType;
@@ -95,21 +97,22 @@ public class PlayerController : MonoBehaviour
     }
   }
 
-  void SmashEnemies()
+  IEnumerator SmashEnemies()
   {
-    int currentEnemies = EnemyController.activeEnemyCount;
     rb.AddForce(Vector3.up * 20, ForceMode.Impulse);
-    rb.AddForce(Vector3.up * -10, ForceMode.Impulse);
+    yield return new WaitForSeconds(0.25f);
+    rb.AddForce(Vector3.up * -60, ForceMode.Impulse);
     isOnGround = false;
-    GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-    if (!isOnGround)
+    yield return new WaitUntil(() => isOnGround);
+
+    Vector3 origin = transform.position;
+    Collider[] hits = Physics.OverlapSphere(origin, smashRadius);
+    foreach (var hit in hits)
     {
-      foreach (var enemy in enemies)
-      {
-        Rigidbody enemyRb = enemy.GetComponent<Rigidbody>();
-        Vector3 away = (enemy.transform.position - transform.position).normalized;
-        enemyRb.AddForce(away * 10, ForceMode.Impulse);
-      }
+      if (!hit.CompareTag("Enemy")) continue;
+      Rigidbody enemyRb = hit.attachedRigidbody;
+      if (!enemyRb) continue;
+      enemyRb.AddExplosionForce(smashForce, origin, smashRadius, 0f, ForceMode.Impulse);
     }
   }
   void PushEnemy(GameObject gmObj)

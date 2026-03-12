@@ -34,6 +34,7 @@ public class SpawnManager : MonoBehaviour
     }
     idx = Random.Range(0, powerUpPrefabs.Length);
     Instantiate(powerUpPrefabs[idx], RandomSpawnPos(), powerUpPrefabs[idx].transform.rotation);
+    //Instantiate(powerUpPrefabs[2], RandomSpawnPos(), powerUpPrefabs[2].transform.rotation);
   }
   Vector3 RandomSpawnPos()
   {

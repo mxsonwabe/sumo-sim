@@ -213,6 +213,7 @@ MonoBehaviour:
   powerUpPrefabs:
   - {fileID: 3253931105072308526, guid: 965f058ee954bd1459e295523e8a459f, type: 3}
   - {fileID: 7101460870803607952, guid: 4e4577cb59c46dc4cb90a3747ba6d4a9, type: 3}
+  - {fileID: 3253931105072308526, guid: 73ee23d2e894e554380f757346a9c55e, type: 3}
 --- !u!4 &359701043
 Transform:
   m_ObjectHideFlags: 0
